@@ -1,0 +1,18 @@
+RewriteEngine On
+RewriteBase /appane-frontend/
+
+# Redirect to index.php if directory without trailing slash
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^menu/?$ index.php [L]
+
+# Prevent directory listing
+Options -Indexes
+
+# Deny access to config files
+<FilesMatch "\.(sql|md)$">
+    Require all denied
+</FilesMatch>
+
+# Deny access to config directory
+RewriteRule ^config/ - [F,L]

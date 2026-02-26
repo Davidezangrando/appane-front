@@ -1,0 +1,255 @@
+/* === AppPane — Custom Styles === */
+
+:root {
+    --bread-brown: #8B5E3C;
+    --bread-dark: #5C3A1E;
+    --bread-light: #F5E6D3;
+    --bread-cream: #FFF8F0;
+    --bread-gold: #D4A854;
+}
+
+body {
+    background-color: var(--bread-cream);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+/* Navbar */
+.bg-bread {
+    background-color: var(--bread-brown) !important;
+}
+
+.navbar-brand i {
+    font-size: 1.3rem;
+}
+
+/* Buttons */
+.btn-bread {
+    background-color: var(--bread-brown);
+    color: white;
+    border: none;
+}
+
+.btn-bread:hover {
+    background-color: var(--bread-dark);
+    color: white;
+}
+
+.btn-outline-bread {
+    color: var(--bread-brown);
+    border-color: var(--bread-brown);
+}
+
+.btn-outline-bread:hover {
+    background-color: var(--bread-brown);
+    color: white;
+}
+
+/* Cards prodotto */
+.card-prodotto {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: transform 0.2s, box-shadow 0.2s;
+    overflow: hidden;
+}
+
+.card-prodotto:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+}
+
+.card-prodotto .card-img-top {
+    height: 180px;
+    object-fit: cover;
+}
+
+.card-prodotto .card-body {
+    padding: 1rem;
+}
+
+.card-prodotto .prezzo {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--bread-brown);
+}
+
+.card-prodotto .disponibilita {
+    font-size: 0.8rem;
+}
+
+/* Quantity control */
+.qty-control {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.qty-control .btn {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.qty-control input {
+    width: 50px;
+    text-align: center;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 0.2rem;
+}
+
+/* Hero / Banner */
+.hero-section {
+    background: linear-gradient(135deg, var(--bread-brown), var(--bread-dark));
+    color: white;
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.hero-section h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+/* Countdown */
+.countdown-box {
+    background: var(--bread-light);
+    border-radius: 12px;
+    padding: 1rem;
+    text-align: center;
+    border: 2px solid var(--bread-gold);
+}
+
+.countdown-box .time-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--bread-dark);
+}
+
+/* Categoria header */
+.categoria-header {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--bread-dark);
+    border-bottom: 3px solid var(--bread-gold);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+/* Badge stato ordine */
+.timeline-stato {
+    position: relative;
+    padding-left: 2rem;
+}
+
+.timeline-stato::before {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #dee2e6;
+}
+
+.timeline-stato .step {
+    position: relative;
+    padding-bottom: 1.5rem;
+}
+
+.timeline-stato .step::before {
+    content: '';
+    position: absolute;
+    left: -1.65rem;
+    top: 4px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #dee2e6;
+    border: 2px solid white;
+}
+
+.timeline-stato .step.active::before {
+    background: var(--bread-brown);
+}
+
+.timeline-stato .step.completed::before {
+    background: #198754;
+}
+
+/* Carrello table */
+.table-carrello img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+/* Auth forms */
+.auth-card {
+    max-width: 480px;
+    margin: 0 auto;
+}
+
+/* Dashboard */
+.dash-card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.dash-card .card-body {
+    padding: 1.5rem;
+}
+
+/* Notifiche */
+.notifica-item {
+    border-left: 4px solid var(--bread-gold);
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    background: white;
+    border-radius: 0 8px 8px 0;
+}
+
+.notifica-item.non-letta {
+    border-left-color: var(--bread-brown);
+    background: var(--bread-light);
+}
+
+/* Esaurito overlay */
+.esaurito-overlay {
+    position: relative;
+}
+
+.esaurito-overlay::after {
+    content: 'Esaurito';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-15deg);
+    background: rgba(220, 53, 69, 0.9);
+    color: white;
+    padding: 0.5rem 2rem;
+    font-weight: 700;
+    font-size: 1.1rem;
+    border-radius: 4px;
+    pointer-events: none;
+}
+
+/* Mobile adjustments */
+@media (max-width: 576px) {
+    .hero-section {
+        padding: 1.25rem;
+    }
+    .hero-section h1 {
+        font-size: 1.4rem;
+    }
+    .card-prodotto .card-img-top {
+        height: 140px;
+    }
+}
