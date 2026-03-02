@@ -59,7 +59,12 @@ function getMenuAttivo(): ?array {
 
 function isMenuAperto(?array $menu = null): bool {
     if (!$menu) $menu = getMenuAttivo();
-    return $menu !== null;
+    if (!$menu) return false;
+    // Ordini aperti dalla DataPubblicazione (mercoledì) fino al giovedì 23:59:59,
+    // cioè finché NOW() < DataPubblicazione + 2 giorni (= venerdì 00:00:00).
+    $fine = new DateTime($menu['DataPubblicazione']);
+    $fine->modify('+2 days');
+    return new DateTime() < $fine;
 }
 
 // --- Prodotti del menu ---
@@ -98,6 +103,34 @@ function getCarrelloTotale(): float {
 function svuotaCarrello(): void {
     $_SESSION['carrello'] = [];
     unset($_SESSION['carrello_menu_id']);
+    clearCarrelloCookie();
+}
+
+function saveCarrelloCookie(): void {
+    if (!isLoggedIn()) {
+        $data = json_encode([
+            'carrello' => $_SESSION['carrello'] ?? [],
+            'menu_id'  => $_SESSION['carrello_menu_id'] ?? null,
+        ]);
+        setcookie('guest_cart', $data, time() + 86400 * 7, '/');
+    }
+}
+
+function restoreCarrelloDaCookie(): void {
+    if (isLoggedIn() || !empty($_SESSION['carrello']) || empty($_COOKIE['guest_cart'])) return;
+    $data = json_decode($_COOKIE['guest_cart'], true);
+    if (!$data || empty($data['carrello'])) return;
+    $menu = getMenuAttivo();
+    if ($menu && $menu['idMenu'] == ($data['menu_id'] ?? null)) {
+        $_SESSION['carrello']         = $data['carrello'];
+        $_SESSION['carrello_menu_id'] = $data['menu_id'];
+    } else {
+        clearCarrelloCookie();
+    }
+}
+
+function clearCarrelloCookie(): void {
+    setcookie('guest_cart', '', time() - 3600, '/');
 }
 
 // Svuota carrello se il menu è cambiato

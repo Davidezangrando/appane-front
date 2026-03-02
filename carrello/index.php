@@ -96,9 +96,14 @@ $menuAperto = isMenuAperto($menu);
                     <i class="bi bi-credit-card"></i> Procedi all'ordine
                 </a>
             <?php else: ?>
-                <a href="<?= SITE_URL ?>/auth/login.php?redirect=checkout" class="btn btn-bread btn-lg">
-                    <i class="bi bi-person"></i> Accedi per ordinare
-                </a>
+                <div class="d-flex flex-column flex-sm-row gap-2">
+                    <a href="<?= SITE_URL ?>/auth/login.php?redirect=checkout" class="btn btn-outline-secondary btn-lg">
+                        <i class="bi bi-person"></i> Accedi
+                    </a>
+                    <a href="<?= SITE_URL ?>/ordine-ospite/" class="btn btn-bread btn-lg">
+                        <i class="bi bi-box-arrow-right"></i> Ordina come ospite
+                    </a>
+                </div>
             <?php endif; ?>
         <?php endif; ?>
     </div>

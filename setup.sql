@@ -4,7 +4,9 @@
 -- Per i dati di test eseguire data-mock.sql dopo.
 -- ============================================
 
-CREATE DATABASE IF NOT EXISTS appane_zangrando
+DROP DATABASE IF EXISTS appane_zangrando;
+
+CREATE DATABASE appane_zangrando
     CHARACTER SET utf8mb4
     COLLATE utf8mb4_unicode_ci;
 
@@ -21,11 +23,13 @@ CREATE TABLE tUtente (
     CAP VARCHAR(10) NOT NULL,
     NumeroTelefono VARCHAR(20) NOT NULL,
     Username VARCHAR(100) UNIQUE NOT NULL,
-    Password VARCHAR(255) NOT NULL
+    Password VARCHAR(255) NOT NULL,
+    isAdmin TINYINT(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB;
 
 CREATE TABLE tOrdine (
     idOrdine INT AUTO_INCREMENT PRIMARY KEY,
+    NomeOspite VARCHAR(200) DEFAULT NULL,           
     NomeViaConsegna VARCHAR(255) NOT NULL,
     NumeroCivicoConsegna VARCHAR(10) NOT NULL,
     CAPConsegna VARCHAR(10) NOT NULL,
@@ -50,6 +54,10 @@ CREATE TABLE tIngrediente (
 
 CREATE TABLE tMenu (
     idMenu INT AUTO_INCREMENT PRIMARY KEY,
+    -- Il menu viene pubblicato il mercoledì.
+    -- Gli ordini sono accettati da DataPubblicazione fino al giovedì sera (23:59:59),
+    -- cioè mentre NOW() < DataPubblicazione + INTERVAL 2 DAY.
+    -- Dal venerdì 00:00 il menu è visibile ma non ordinabile.
     DataPubblicazione DATE NOT NULL
 ) ENGINE=InnoDB;
 
@@ -57,7 +65,7 @@ CREATE TABLE tMenu (
 
 CREATE TABLE tSelezione (
     idProdotto INT NOT NULL,
-    idUtente INT NOT NULL,
+    idUtente INT DEFAULT NULL,              -- NULL per ordini ospite
     idOrdine INT NOT NULL,
     Quantita INT NOT NULL,
     PRIMARY KEY (idProdotto, idOrdine),

@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once __DIR__ . '/../../includes/functions.php';
+require_once __DIR__ . '/../../includes/auth.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     redirect('/auth/login.php');
@@ -21,17 +21,19 @@ if (empty($username) || empty($password)) {
 }
 
 $db = getDB();
-$stmt = $db->prepare("SELECT idUtente, Nome, Password FROM tUtente WHERE Username = ?");
+$stmt = $db->prepare("SELECT idUtente, Nome, Password, isAdmin FROM tUtente WHERE Username = ?");
 $stmt->execute([$username]);
 $user = $stmt->fetch();
 
-if (!$user || !password_verify($password, $user['Password'])) {
+if (!$user || $user['Password'] !== $password) {
     setFlash('error', 'Username o password non corretti.');
     redirect('/auth/login.php');
 }
 
 session_regenerate_id(true);
 $_SESSION['user_id'] = $user['idUtente'];
+$_SESSION['is_admin'] = (bool)($user['isAdmin'] ?? false);
+clearCarrelloCookie();
 
 setFlash('success', 'Benvenuto, ' . $user['Nome'] . '!');
 

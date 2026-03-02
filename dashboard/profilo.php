@@ -38,13 +38,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCsrfToken()) {
         $stmt->execute([$_SESSION['user_id']]);
         $hash = $stmt->fetchColumn();
 
-        if (!password_verify($currentPw, $hash)) {
+        if ($currentPw !== $hash) {
             setFlash('error', 'Password attuale non corretta.');
-            redirect('/dashboard/profilo.php');
-        }
-
-        if (strlen($newPw) < 8) {
-            setFlash('error', 'La nuova password deve avere almeno 8 caratteri.');
             redirect('/dashboard/profilo.php');
         }
 
@@ -54,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCsrfToken()) {
         }
 
         $stmt = $db->prepare("UPDATE tUtente SET Password = ? WHERE idUtente = ?");
-        $stmt->execute([password_hash($newPw, PASSWORD_DEFAULT), $_SESSION['user_id']]);
+        $stmt->execute([$newPw, $_SESSION['user_id']]);
         setFlash('success', 'Password cambiata con successo!');
         redirect('/dashboard/profilo.php');
     }

@@ -28,11 +28,6 @@ if (empty($nome) || empty($cognome) || empty($username) || empty($telefono) ||
     redirect('/auth/registrazione.php');
 }
 
-if (strlen($password) < 8) {
-    setFlash('error', 'La password deve avere almeno 8 caratteri.');
-    redirect('/auth/registrazione.php');
-}
-
 if ($password !== $passwordConfirm) {
     setFlash('error', 'Le password non coincidono.');
     redirect('/auth/registrazione.php');
@@ -55,7 +50,7 @@ $stmt = $db->prepare("
 ");
 $stmt->execute([
     $nome, $cognome, $nomeVia, $numeroCivico, $cap, $telefono,
-    $username, password_hash($password, PASSWORD_DEFAULT)
+    $username, $password
 ]);
 
 $userId = $db->lastInsertId();
@@ -63,6 +58,7 @@ $userId = $db->lastInsertId();
 // Login automatico
 session_regenerate_id(true);
 $_SESSION['user_id'] = $userId;
+$_SESSION['is_admin'] = false;
 
 setFlash('success', 'Registrazione completata! Benvenuto, ' . sanitize($nome) . '!');
 redirect('/dashboard/');

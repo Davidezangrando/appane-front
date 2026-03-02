@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once __DIR__ . '/../includes/functions.php';
+require_once __DIR__ . '/../includes/auth.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !verifyCsrfToken()) {
     redirect('/carrello/');
@@ -15,4 +15,5 @@ if (!$prodottoId || !isset($_SESSION['carrello'][$prodottoId])) {
 
 $_SESSION['carrello'][$prodottoId]['quantita'] = $quantita;
 setFlash('success', 'Quantità aggiornata.');
+saveCarrelloCookie();
 redirect('/carrello/');

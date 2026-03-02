@@ -19,3 +19,22 @@ function getUser(): ?array {
     $stmt->execute([$_SESSION['user_id']]);
     return $stmt->fetch() ?: null;
 }
+
+function isAdmin(): bool {
+    if (!isLoggedIn()) return false;
+    if (!isset($_SESSION['is_admin'])) {
+        $db = getDB();
+        $stmt = $db->prepare("SELECT isAdmin FROM tUtente WHERE idUtente = ?");
+        $stmt->execute([$_SESSION['user_id']]);
+        $_SESSION['is_admin'] = (bool)($stmt->fetchColumn());
+    }
+    return $_SESSION['is_admin'];
+}
+
+function requireAdmin(): void {
+    requireLogin();
+    if (!isAdmin()) {
+        setFlash('error', 'Accesso non autorizzato.');
+        redirect('/');
+    }
+}

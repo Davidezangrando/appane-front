@@ -25,6 +25,13 @@ $menuAperto = isMenuAperto($menu);
         </div>
     </div>
 
+    <?php if (!$menuAperto): ?>
+        <div class="alert alert-warning mt-3 d-flex align-items-center gap-2" role="alert">
+            <i class="bi bi-lock-fill fs-5"></i>
+            <span><strong>Non ordinabile.</strong> Il periodo di ordinazione per questo menu è terminato. Puoi consultare i prodotti ma non è più possibile effettuare ordini.</span>
+        </div>
+    <?php endif; ?>
+
     <?php
     $prodotti = getProdottiMenu($menu['idMenu']);
     ?>
@@ -38,8 +45,13 @@ $menuAperto = isMenuAperto($menu);
             <?php foreach ($prodotti as $prod): ?>
                 <div class="col-6 col-md-4 col-lg-3">
                     <div class="card card-prodotto h-100">
-                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height:160px">
+                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center position-relative" style="height:160px">
                             <i class="bi bi-basket2 text-muted" style="font-size:3rem"></i>
+                            <?php if (!$menuAperto): ?>
+                                <span class="position-absolute top-0 end-0 m-2 badge bg-secondary">
+                                    <i class="bi bi-lock-fill"></i> Non ordinabile
+                                </span>
+                            <?php endif; ?>
                         </div>
                         <div class="card-body d-flex flex-column">
                             <h6 class="card-title mb-1"><?= sanitize($prod['NomeProdotto']) ?></h6>

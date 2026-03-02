@@ -24,7 +24,12 @@ $stmt->execute([$_SESSION['user_id']]);
 $totaleOrdini = (int)$stmt->fetchColumn();
 ?>
 
-<h1 class="mb-4">Ciao, <?= sanitize($user['Nome']) ?>! <i class="bi bi-hand-wave" style="color:var(--bread-gold)"></i></h1>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Ciao, <?= sanitize($user['Nome']) ?>! 👋</h1>
+    <a href="<?= SITE_URL ?>/auth/logout.php" class="btn btn-outline-danger btn-sm">
+        <i class="bi bi-box-arrow-right"></i> Esci
+    </a>
+</div>
 
 <div class="row g-3 mb-4">
     <div class="col-md-6">
