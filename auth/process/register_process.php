@@ -55,6 +55,17 @@ $stmt->execute([
 
 $userId = $db->lastInsertId();
 
+// Collega eventuali ordini ospite con lo stesso numero di telefono
+$stmt = $db->prepare("
+    UPDATE tSelezione
+    SET idUtente = ?
+    WHERE idUtente IS NULL
+      AND idOrdine IN (
+          SELECT idOrdine FROM tOrdine WHERE TelefonoEmergenza = ?
+      )
+");
+$stmt->execute([$userId, $telefono]);
+
 // Login automatico
 session_regenerate_id(true);
 $_SESSION['user_id'] = $userId;

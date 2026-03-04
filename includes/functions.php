@@ -131,6 +131,7 @@ function restoreCarrelloDaCookie(): void {
 
 function clearCarrelloCookie(): void {
     setcookie('guest_cart', '', time() - 3600, '/');
+    unset($_COOKIE['guest_cart']);
 }
 
 // Svuota carrello se il menu è cambiato
