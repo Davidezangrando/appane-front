@@ -162,3 +162,12 @@ function redirect(string $url): void {
     header('Location: ' . SITE_URL . $url);
     exit;
 }
+
+// --- Notifiche ---
+function getNotificheNonLette(): int {
+    if (!isLoggedIn()) return 0;
+    $db = getDB();
+    $stmt = $db->prepare("SELECT COUNT(*) FROM tNotifica WHERE idUtente = ? AND Letto = 0");
+    $stmt->execute([$_SESSION['user_id']]);
+    return (int)$stmt->fetchColumn();
+}

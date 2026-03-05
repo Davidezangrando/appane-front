@@ -88,7 +88,10 @@ require_once __DIR__ . '/../includes/header.php';
     <p class="text-muted">Conserva il numero ordine <strong>#<?= $ordineId ?></strong> per eventuali comunicazioni.</p>
 
     <div class="mt-4 d-flex gap-2 justify-content-center flex-wrap">
-        <a href="<?= SITE_URL ?>/auth/registrazione.php" class="btn btn-bread">
+        <a href="<?= SITE_URL ?>/ordine-ospite/traccia.php" class="btn btn-bread">
+            <i class="bi bi-search"></i> Traccia ordine
+        </a>
+        <a href="<?= SITE_URL ?>/auth/registrazione.php" class="btn btn-outline-secondary">
             <i class="bi bi-person-plus"></i> Crea un account
         </a>
         <a href="<?= SITE_URL ?>/" class="btn btn-outline-secondary">

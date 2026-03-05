@@ -39,6 +39,16 @@ $currentUser = isLoggedIn() ? getUser() : null;
             </a>
 
             <?php if (isLoggedIn()): ?>
+            <?php $notifNonLette = getNotificheNonLette(); ?>
+            <a href="<?= SITE_URL ?>/dashboard/notifiche.php" class="btn btn-outline-light btn-sm position-relative" title="Notifiche">
+                <i class="bi bi-bell"></i>
+                <?php if ($notifNonLette > 0): ?>
+                    <span class="nav-cart-badge"><?= $notifNonLette ?></span>
+                <?php endif; ?>
+            </a>
+            <?php endif; ?>
+
+            <?php if (isLoggedIn()): ?>
                 <div class="dropdown">
                     <button class="btn btn-outline-light btn-sm dropdown-toggle" type="button">
                         <i class="bi bi-person-circle"></i>

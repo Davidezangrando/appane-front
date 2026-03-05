@@ -44,7 +44,8 @@ CREATE TABLE tProdotto (
     idProdotto INT AUTO_INCREMENT PRIMARY KEY,
     NomeProdotto VARCHAR(200) NOT NULL,
     Descrizione TEXT,
-    Prezzo DECIMAL(6,2) NOT NULL
+    Prezzo DECIMAL(6,2) NOT NULL,
+    Immagine VARCHAR(500) DEFAULT NULL
 ) ENGINE=InnoDB;
 
 CREATE TABLE tIngrediente (
@@ -73,6 +74,15 @@ CREATE TABLE tSelezione (
     FOREIGN KEY (idProdotto) REFERENCES tProdotto(idProdotto),
     FOREIGN KEY (idUtente) REFERENCES tUtente(idUtente),
     FOREIGN KEY (idOrdine) REFERENCES tOrdine(idOrdine)
+) ENGINE=InnoDB;
+
+CREATE TABLE tNotifica (
+    idNotifica  INT AUTO_INCREMENT PRIMARY KEY,
+    idUtente    INT NOT NULL,
+    Messaggio   VARCHAR(500) NOT NULL,
+    Letto       TINYINT(1) NOT NULL DEFAULT 0,
+    CreatoIl    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (idUtente) REFERENCES tUtente(idUtente)
 ) ENGINE=InnoDB;
 
 CREATE TABLE tRicetta (

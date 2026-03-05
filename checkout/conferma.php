@@ -62,6 +62,15 @@ try {
     redirect('/checkout/');
 }
 
+// Notifica in-app per l'utente registrato
+$msgNotifica = $stato === 'confermato'
+    ? "Il tuo ordine #{$ordineId} è stato confermato!"
+    : "Il tuo ordine #{$ordineId} è in attesa di conferma dal panificio.";
+try {
+    $db->prepare("INSERT INTO tNotifica (idUtente, Messaggio) VALUES (?, ?)")
+       ->execute([$_SESSION['user_id'], $msgNotifica]);
+} catch (Exception $e) { /* non bloccare il flusso */ }
+
 // Pagina conferma
 $pageTitle = $stato === 'confermato' ? 'Ordine Confermato' : 'Ordine in Attesa';
 require_once __DIR__ . '/../includes/header.php';

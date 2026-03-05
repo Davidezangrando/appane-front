@@ -45,10 +45,16 @@ $menuAperto = isMenuAperto($menu);
             <?php foreach ($prodotti as $prod): ?>
                 <div class="col-6 col-md-4 col-lg-3">
                     <div class="card card-prodotto h-100">
-                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center position-relative" style="height:160px">
-                            <i class="bi bi-basket2 text-muted" style="font-size:3rem"></i>
+                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center position-relative" style="height:160px; overflow:hidden">
+                            <?php if (!empty($prod['Immagine'])): ?>
+                                <img src="<?= SITE_URL ?>/<?= sanitize($prod['Immagine']) ?>"
+                                     alt="<?= sanitize($prod['NomeProdotto']) ?>"
+                                     style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0">
+                            <?php else: ?>
+                                <i class="bi bi-basket2 text-muted" style="font-size:3rem"></i>
+                            <?php endif; ?>
                             <?php if (!$menuAperto): ?>
-                                <span class="position-absolute top-0 end-0 m-2 badge bg-secondary">
+                                <span class="position-absolute top-0 end-0 m-2 badge bg-secondary" style="z-index:1">
                                     <i class="bi bi-lock-fill"></i> Non ordinabile
                                 </span>
                             <?php endif; ?>
