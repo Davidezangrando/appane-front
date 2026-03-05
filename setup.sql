@@ -36,7 +36,8 @@ CREATE TABLE tOrdine (
     IndicazioniUtente TEXT,
     TelefonoEmergenza VARCHAR(20) NOT NULL,
     ImportoTotalePrevisto DECIMAL(8,2) NOT NULL DEFAULT 0.00,
-    ImportoFinaleConfermato DECIMAL(8,2) DEFAULT NULL
+    ImportoFinaleConfermato DECIMAL(8,2) DEFAULT NULL,
+    Stato ENUM('in_attesa', 'confermato') NOT NULL DEFAULT 'in_attesa'
 ) ENGINE=InnoDB;
 
 CREATE TABLE tProdotto (

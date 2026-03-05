@@ -502,6 +502,7 @@ footer .text-muted { color: rgba(255,255,255,0.5) !important; }
     margin-bottom: 2rem;
 }
 .hero-section h1 { font-size: 1.8rem; font-weight: 700; }
+.hero-section .lead { color: rgba(255,255,255,0.88); }
 
 /* === Quantity control === */
 .qty-control {

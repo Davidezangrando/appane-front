@@ -29,15 +29,19 @@ if (empty($nomeViaConsegna) || empty($numeroCivicoConsegna) || empty($capConsegn
 $totale = getCarrelloTotale();
 $db = getDB();
 
+// Determina stato in base al CAP:
+// 34xxx → confermato subito; tutto il resto (incluso 31xxx) → in attesa
+$stato = preg_match('/^34/', $capConsegna) ? 'confermato' : 'in_attesa';
+
 try {
     $db->beginTransaction();
 
     // Inserisci ordine in tOrdine
     $stmt = $db->prepare("
-        INSERT INTO tOrdine (NomeViaConsegna, NumeroCivicoConsegna, CAPConsegna, IndicazioniUtente, TelefonoEmergenza, ImportoTotalePrevisto)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO tOrdine (NomeViaConsegna, NumeroCivicoConsegna, CAPConsegna, IndicazioniUtente, TelefonoEmergenza, ImportoTotalePrevisto, Stato)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
     ");
-    $stmt->execute([$nomeViaConsegna, $numeroCivicoConsegna, $capConsegna, $indicazioni ?: null, $telefonoEmergenza, $totale]);
+    $stmt->execute([$nomeViaConsegna, $numeroCivicoConsegna, $capConsegna, $indicazioni ?: null, $telefonoEmergenza, $totale, $stato]);
     $ordineId = $db->lastInsertId();
 
     // Inserisci righe in tSelezione
@@ -59,14 +63,20 @@ try {
 }
 
 // Pagina conferma
-$pageTitle = 'Ordine Confermato';
+$pageTitle = $stato === 'confermato' ? 'Ordine Confermato' : 'Ordine in Attesa';
 require_once __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="text-center py-5">
+<?php if ($stato === 'confermato'): ?>
     <div style="font-size:4rem;color:#198754"><i class="bi bi-check-circle-fill"></i></div>
     <h1 class="mt-3">Ordine Confermato!</h1>
-    <p class="lead text-muted">Il tuo ordine <strong>#<?= $ordineId ?></strong> è stato ricevuto.</p>
+    <p class="lead text-muted">Il tuo ordine <strong>#<?= $ordineId ?></strong> è stato accettato e confermato.</p>
+<?php else: ?>
+    <div style="font-size:4rem;color:#ffc107"><i class="bi bi-hourglass-split"></i></div>
+    <h1 class="mt-3">Ordine in Attesa</h1>
+    <p class="lead text-muted">Il tuo ordine <strong>#<?= $ordineId ?></strong> è stato ricevuto ed è in attesa di conferma da parte del panificio.</p>
+<?php endif; ?>
     <p>Totale previsto: <strong style="color:var(--bread-brown)"><?= formatPrezzo($totale) ?></strong></p>
     <p class="text-muted small">Il totale finale verrà confermato dal panificio.</p>
 
