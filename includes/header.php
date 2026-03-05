@@ -66,6 +66,9 @@ $currentUser = isLoggedIn() ? getUser() : null;
                     </ul>
                 </div>
             <?php else: ?>
+                <a href="<?= SITE_URL ?>/ordine-ospite/traccia.php" class="btn btn-outline-light btn-sm">
+                    <i class="bi bi-search"></i> Traccia ordine
+                </a>
                 <a href="<?= SITE_URL ?>/auth/login.php" class="btn btn-outline-light btn-sm">
                     <i class="bi bi-person"></i> Accedi
                 </a>

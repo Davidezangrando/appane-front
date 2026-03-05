@@ -370,6 +370,15 @@ require_once __DIR__ . '/includes/auth.php';
             <span class="hero-pill"><i class="bi bi-truck"></i> Consegna a domicilio</span>
             <span class="hero-pill"><i class="bi bi-heart-fill"></i> Fatto a mano</span>
         </div>
+        <?php if (!isLoggedIn()): ?>
+        <p style="margin-top:1.6rem; font-size:0.85rem; color:rgba(255,255,255,0.5)">
+            Hai già ordinato come ospite?
+            <a href="<?= SITE_URL ?>/ordine-ospite/traccia.php"
+               style="color:#e8b96a; text-decoration:underline; text-underline-offset:3px">
+                <i class="bi bi-search"></i> Traccia il tuo ordine
+            </a>
+        </p>
+        <?php endif; ?>
     </div>
 </section>
 
