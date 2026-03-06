@@ -1,11 +1,9 @@
 <?php
+require_once __DIR__ . '/../includes/auth.php';
+if (isLoggedIn()) redirect('/dashboard/ordini.php');
+
 $pageTitle = 'Traccia Ordine';
 require_once __DIR__ . '/../includes/header.php';
-
-// Se loggato, manda alla dashboard ordini
-if (isLoggedIn()) {
-    redirect('/dashboard/ordini.php');
-}
 
 $ordine   = null;
 $cercato  = false;

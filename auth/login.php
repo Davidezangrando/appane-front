@@ -1,10 +1,9 @@
 <?php
+require_once __DIR__ . '/../includes/auth.php';
+if (isLoggedIn()) redirect('/dashboard/');
+
 $pageTitle = 'Accedi';
 require_once __DIR__ . '/../includes/header.php';
-
-if (isLoggedIn()) {
-    redirect('/dashboard/');
-}
 
 $redirect = sanitize($_GET['redirect'] ?? '');
 ?>

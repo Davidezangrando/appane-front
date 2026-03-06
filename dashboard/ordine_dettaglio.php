@@ -1,6 +1,5 @@
 <?php
-$pageTitle = 'Dettaglio Ordine';
-require_once __DIR__ . '/../includes/header.php';
+require_once __DIR__ . '/../includes/auth.php';
 requireLogin();
 
 $ordineId = (int)($_GET['id'] ?? 0);
@@ -25,6 +24,9 @@ if (!$ordine) {
     setFlash('error', 'Ordine non trovato.');
     redirect('/dashboard/ordini.php');
 }
+
+$pageTitle = 'Dettaglio Ordine';
+require_once __DIR__ . '/../includes/header.php';
 
 // Prodotti dell'ordine
 $stmt = $db->prepare("

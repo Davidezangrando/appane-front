@@ -1,7 +1,9 @@
 <?php
+require_once __DIR__ . '/../includes/auth.php';
+requireLogin();
+
 $pageTitle = 'Notifiche';
 require_once __DIR__ . '/../includes/header.php';
-requireLogin();
 
 $db = getDB();
 

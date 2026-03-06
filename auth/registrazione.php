@@ -1,10 +1,9 @@
 <?php
+require_once __DIR__ . '/../includes/auth.php';
+if (isLoggedIn()) redirect('/dashboard/');
+
 $pageTitle = 'Registrazione';
 require_once __DIR__ . '/../includes/header.php';
-
-if (isLoggedIn()) {
-    redirect('/dashboard/');
-}
 ?>
 
 <div class="auth-card">

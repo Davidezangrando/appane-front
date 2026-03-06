@@ -1,11 +1,9 @@
 <?php
+require_once __DIR__ . '/../includes/auth.php';
+if (isLoggedIn()) redirect('/checkout/');
+
 $pageTitle = 'Ordine Ospite';
 require_once __DIR__ . '/../includes/header.php';
-
-// Se già loggato, usa il checkout normale
-if (isLoggedIn()) {
-    redirect('/checkout/');
-}
 
 $carrello = $_SESSION['carrello'] ?? [];
 $menu     = getMenuAttivo();

@@ -1,12 +1,10 @@
 <?php
-$pageTitle = 'Profilo';
-require_once __DIR__ . '/../includes/header.php';
+// Elaborazione POST prima di qualsiasi output (evita "headers already sent")
+require_once __DIR__ . '/../includes/auth.php';
 requireLogin();
 
 $db = getDB();
-$user = getUser();
 
-// Aggiornamento profilo
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCsrfToken()) {
     $action = $_POST['action'] ?? '';
 
@@ -33,7 +31,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCsrfToken()) {
         $newPw     = $_POST['new_password'] ?? '';
         $confirmPw = $_POST['confirm_password'] ?? '';
 
-        // Verifica password attuale
         $stmt = $db->prepare("SELECT Password FROM tUtente WHERE idUtente = ?");
         $stmt->execute([$_SESSION['user_id']]);
         $hash = $stmt->fetchColumn();
@@ -54,6 +51,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCsrfToken()) {
         redirect('/dashboard/profilo.php');
     }
 }
+
+$pageTitle = 'Profilo';
+require_once __DIR__ . '/../includes/header.php';
+$user = getUser();
 ?>
 
 <div class="d-flex justify-content-between align-items-center mb-4">
