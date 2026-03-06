@@ -1,14 +1,15 @@
 -- ============================================
 -- APP PANE — Dati di test (mock)
--- Da eseguire DOPO setup.sql.
--- Tutti gli indirizzi sono vie reali di Trieste.
+-- Da eseguire DOPO setup.sql (già aggiornato con tutte le colonne).
+-- Tutti gli indirizzi di Trieste: CAP 34xxx → Stato='confermato' automatico.
+-- Ordini 2 e 7 usano Udine (CAP 33100) → Stato='in_attesa' per testare entrambi i flussi.
 -- Password di tutti gli utenti: password123
 -- ============================================
 
 USE appane_zangrando;
 
 -- ── Utenti ───────────────────────────────────
--- isAdmin = 1 solo per admin@appane
+-- isAdmin = 1 solo per admin
 
 INSERT INTO tUtente (Nome, Cognome, NomeVia, NumeroCivico, CAP, NumeroTelefono, Username, Password, isAdmin) VALUES
 ('Admin',    'AppPane',  'Via Carducci',        '1',  '34122', '0000000000', 'admin',           'admin123',    1),
@@ -38,14 +39,15 @@ INSERT INTO tIngrediente (NomeIngrediente, Descrizione) VALUES
 ('Miele millefiori',                  'Miele locale di produzione artigianale');
 
 -- ── Prodotti ────────────────────────────────
+-- Immagine = NULL (nessuna immagine caricata nei dati di test)
 
-INSERT INTO tProdotto (NomeProdotto, Descrizione, Prezzo) VALUES
-('Pagnotta con lievito madre', 'Pagnotta tradizionale a lunga lievitazione, crosta croccante e mollica alveolata',      3.50),
-('Filone integrale',           'Filone con farina integrale macinata a pietra, ricco di fibre e dal sapore rustico',    4.00),
-('Pane di semola',             'Pane dorato con semola rimacinata di grano duro, profumato e dalla crosta spessa',      4.50),
-('Focaccia al rosmarino',      'Focaccia soffice con rosmarino fresco e abbondante olio EVO, sale grosso in superficie',3.80),
-('Pane alle olive',            'Pane morbido con olive taggiasche denocciolate, ideale con formaggi e salumi',          5.00),
-('Filone ai semi misti',       'Filone integrale con mix di semi tostati (lino, girasole, sesamo), croccante',          4.20);
+INSERT INTO tProdotto (NomeProdotto, Descrizione, Prezzo, Immagine) VALUES
+('Pagnotta con lievito madre', 'Pagnotta tradizionale a lunga lievitazione, crosta croccante e mollica alveolata',      3.50, NULL),
+('Filone integrale',           'Filone con farina integrale macinata a pietra, ricco di fibre e dal sapore rustico',    4.00, NULL),
+('Pane di semola',             'Pane dorato con semola rimacinata di grano duro, profumato e dalla crosta spessa',      4.50, NULL),
+('Focaccia al rosmarino',      'Focaccia soffice con rosmarino fresco e abbondante olio EVO, sale grosso in superficie',3.80, NULL),
+('Pane alle olive',            'Pane morbido con olive taggiasche denocciolate, ideale con formaggi e salumi',          5.00, NULL),
+('Filone ai semi misti',       'Filone integrale con mix di semi tostati (lino, girasole, sesamo), croccante',          4.20, NULL);
 
 -- ── Ricette ─────────────────────────────────
 
@@ -65,100 +67,147 @@ INSERT INTO tRicetta (idIngrediente, idProdotto, Quantita) VALUES
 
 -- ── Menu settimanali ─────────────────────────
 --
--- Regola: il menu viene pubblicato il mercoledì (DataPubblicazione).
--- Gli ordini sono aperti da quel giorno fino al GIOVEDÌ 23:59:59,
--- cioè finché NOW() < DataPubblicazione + INTERVAL 2 DAY.
--- Dal venerdì 00:00 in poi il menu è visibile ma non ordinabile.
+-- Il menu viene pubblicato il mercoledì (DataPubblicazione).
+-- Ordinabile mentre NOW() < DataPubblicazione + 2 giorni (= venerdì 00:00).
 --
 -- ┌─────────────────────────────────────────────────────────────────┐
--- │  SCENARI DI TEST (eseguire UNO dei due UPDATE qui sotto):       │
+-- │  SCENARI DI TEST per il Menu 3 (eseguire UNO degli UPDATE):     │
 -- │                                                                 │
--- │  A) ORDINABILE (simula mercoledì o giovedì entro le 23:59):     │
+-- │  A) ORDINABILE (finestra d'ordine ancora aperta):               │
 -- │     UPDATE tMenu SET DataPubblicazione = DATE_SUB(CURDATE(), INTERVAL 1 DAY) WHERE idMenu = 3; │
 -- │                                                                 │
--- │  B) NON ORDINABILE (simula venerdì 00:01 in poi):               │
--- │     UPDATE tMenu SET DataPubblicazione = DATE_SUB(CURDATE(), INTERVAL 2 DAY) WHERE idMenu = 3; │
+-- │  B) NON ORDINABILE (finestra chiusa, menu solo visibile):       │
+-- │     UPDATE tMenu SET DataPubblicazione = DATE_SUB(CURDATE(), INTERVAL 3 DAY) WHERE idMenu = 3; │
 -- └─────────────────────────────────────────────────────────────────┘
 
 INSERT INTO tMenu (DataPubblicazione) VALUES
-('2026-01-14'),                                       -- Menu 1 (idMenu=1) — storico
-('2026-02-04'),                                       -- Menu 2 (idMenu=2) — storico
+('2026-01-14'),                                       -- Menu 1 (idMenu=1) — storico gennaio
+('2026-02-04'),                                       -- Menu 2 (idMenu=2) — storico febbraio
 (DATE_SUB(CURDATE(), INTERVAL 1 DAY));                -- Menu 3 (idMenu=3) — corrente: ORDINABILE
-
--- Per passare a NON ORDINABILE esegui:
--- UPDATE tMenu SET DataPubblicazione = DATE_SUB(CURDATE(), INTERVAL 2 DAY) WHERE idMenu = 3;
 
 -- ── Produzione (prodotti disponibili per menu) ─
 
 INSERT INTO tProduzione (idProdotto, idMenu) VALUES
 -- Menu 1 (gennaio): pagnotta, filone integrale, pane di semola, focaccia
 (1, 1), (2, 1), (3, 1), (4, 1),
--- Menu 2 (febbraio W1): filone integrale, pane di semola, pane alle olive, filone ai semi
+-- Menu 2 (febbraio): filone integrale, pane di semola, pane alle olive, filone ai semi
 (2, 2), (3, 2), (5, 2), (6, 2),
 -- Menu 3 (corrente): tutti e 6 i prodotti
 (1, 3), (2, 3), (3, 3), (4, 3), (5, 3), (6, 3);
 
 -- ── Ordini ───────────────────────────────────
--- ImportoFinaleConfermato = NULL → non ancora confermato dall'admin.
+--
+-- Logica Stato (replicata da checkout/conferma.php):
+--   CAP inizia con '34' → Stato = 'confermato'  (consegna in area Trieste)
+--   Altri CAP          → Stato = 'in_attesa'    (da confermare manualmente)
+--
+-- Ordini 2 e 7 hanno indirizzo a Udine (CAP 33100) → in_attesa, per testare entrambi i flussi.
+-- NomeOspite = NULL per utenti registrati; valorizzato solo per ordini ospite.
+--
+-- Colonne: NomeOspite, NomeViaConsegna, NumeroCivicoConsegna, CAPConsegna,
+--          IndicazioniUtente, TelefonoEmergenza, ImportoTotalePrevisto, ImportoFinaleConfermato, Stato
 
-INSERT INTO tOrdine (NomeViaConsegna, NumeroCivicoConsegna, CAPConsegna, IndicazioniUtente, TelefonoEmergenza, ImportoTotalePrevisto, ImportoFinaleConfermato) VALUES
--- Ordine 1 — luca.ferrario
-('Via Carducci',        '12',  '34122', NULL,                                          '3401234567', 10.80, NULL),
--- Ordine 2 — giulia.tamaro
-('Corso Italia',        '3',   '34122', 'Lasciare in portineria',                      '3479876543', 14.00, NULL),
--- Ordine 3 — marco.sartori — confermato
-('Via San Nicolò',      '8',   '34121', 'Citofono SARTORI, secondo piano',             '3337654321', 14.70, 14.70),
--- Ordine 4 — elena.cosulich — confermato
-('Via Mazzini',         '21',  '34121', NULL,                                          '3491122334', 12.80, 12.80),
--- Ordine 5 — luca.ferrario — secondo ordine, confermato
-('Via Carducci',        '12',  '34122', NULL,                                          '3401234567', 12.50, 12.50),
--- Ordine 6 — paolo.pieri — confermato
-('Viale XX Settembre',  '5',   '34121', 'Piano terra, campanello PIERI',               '3665544332', 15.30, 15.30),
--- Ordine 7 — stefania.vidali — in attesa
-('Via Fabio Severo',    '44',  '34127', 'Suonare al citofono 7',                       '3388776655', 14.20, NULL),
--- Ordine 8 — roberto.musco — confermato
-('Via Valdirivo',       '30',  '34122', 'Ufficio al primo piano, chiedere di Roberto', '3451234567', 11.00, 11.00),
--- Ordine 9 — ospite (NomeOspite valorizzato)
-('Via Coroneo',         '15',  '34133', NULL,                                          '3331122334',  8.30, NULL);
+INSERT INTO tOrdine (NomeOspite, NomeViaConsegna, NumeroCivicoConsegna, CAPConsegna, IndicazioniUtente, TelefonoEmergenza, ImportoTotalePrevisto, ImportoFinaleConfermato, Stato) VALUES
+-- Ordine 1 — luca.ferrario — Trieste → confermato | prezzo già impostato dall'admin
+-- Prodotti Menu 1: 2×pagnotta (3.50) + 1×focaccia (3.80) = 10.80
+(NULL, 'Via Carducci',       '12', '34122', NULL,                                          '3401234567', 10.80, 10.80, 'confermato'),
+
+-- Ordine 2 — giulia.tamaro — Udine → in_attesa | nessun prezzo confermato
+-- Prodotti Menu 2: 1×filone integrale (4.00) + 2×pane alle olive (5.00) = 14.00
+(NULL, 'Via Mercatovecchio', '5',  '33100', 'Citofono TAMARO, secondo piano',              '3479876543', 14.00, NULL, 'in_attesa'),
+
+-- Ordine 3 — marco.sartori — Trieste → confermato | prezzo già impostato dall'admin
+-- Prodotti Menu 3: 3×pagnotta (3.50) + 1×filone ai semi (4.20) = 14.70
+(NULL, 'Via San Nicolò',     '8',  '34121', 'Citofono SARTORI, secondo piano',             '3337654321', 14.70, 14.70, 'confermato'),
+
+-- Ordine 4 — elena.cosulich — Trieste → confermato | prezzo già impostato dall'admin
+-- Prodotti Menu 1: 2×pane di semola (4.50) + 1×focaccia (3.80) = 12.80
+(NULL, 'Via Mazzini',        '21', '34121', NULL,                                          '3491122334', 12.80, 12.80, 'confermato'),
+
+-- Ordine 5 — luca.ferrario (2° ordine) — Trieste → confermato | prezzo NON ancora confermato dall'admin
+-- Prodotti Menu 2: 2×filone integrale (4.00) + 1×pane di semola (4.50) = 12.50
+(NULL, 'Via Carducci',       '12', '34122', NULL,                                          '3401234567', 12.50, NULL, 'confermato'),
+
+-- Ordine 6 — paolo.pieri — Trieste → confermato | prezzo già impostato dall'admin
+-- Prodotti Menu 3: 1×pagnotta (3.50) + 2×focaccia (3.80) + 1×filone ai semi (4.20) = 15.30
+(NULL, 'Viale XX Settembre', '5',  '34121', 'Piano terra, campanello PIERI',               '3665544332', 15.30, 15.30, 'confermato'),
+
+-- Ordine 7 — stefania.vidali — Udine → in_attesa | nessun prezzo confermato
+-- Prodotti Menu 3: 2×pane alle olive (5.00) + 1×filone ai semi (4.20) = 14.20
+(NULL, 'Via Giuseppe Verdi', '44', '33100', 'Suonare al citofono 7',                       '3388776655', 14.20, NULL, 'in_attesa'),
+
+-- Ordine 8 — roberto.musco — Trieste → confermato | prezzo già impostato dall'admin
+-- Prodotti Menu 1: 2×pagnotta (3.50) + 1×filone integrale (4.00) = 11.00
+(NULL, 'Via Valdirivo',      '30', '34122', 'Ufficio al primo piano, chiedere di Roberto', '3451234567', 11.00, 11.00, 'confermato'),
+
+-- Ordine 9 — OSPITE (Giovanni Russi) — Trieste → confermato | prezzo NON ancora confermato dall'admin
+-- Per testare traccia.php: numero ordine = 9, telefono = 3331122334
+-- Prodotti Menu 3: 1×pagnotta (3.50) + 1×filone ai semi (4.20) = 7.70
+('Giovanni Russi', 'Via Coroneo', '15', '34133', NULL,                                     '3331122334',  7.70, NULL, 'confermato');
 
 -- ── Selezione (righe d'ordine) ───────────────
--- Nota: idUtente = 1 → admin, idUtente = 2 → luca.ferrario, ecc.
--- Gli utenti sono stati inseriti con isAdmin in testa, quindi gli indici shiftano di 1.
 
 INSERT INTO tSelezione (idProdotto, idUtente, idOrdine, Quantita) VALUES
--- Ordine 1 — luca.ferrario (idUtente=2) — prodotti del Menu 1: 2×3.50 + 1×3.80 = 10.80
-(1, 2, 1, 2),   -- Pagnotta ×2
+-- Ordine 1 — luca.ferrario (idUtente=2): 2×pagnotta + 1×focaccia = 10.80
+(1, 2, 1, 2),   -- Pagnotta con lievito madre ×2
 (4, 2, 1, 1),   -- Focaccia al rosmarino ×1
 
--- Ordine 2 — giulia.tamaro (idUtente=3) — prodotti del Menu 2: 1×4.00 + 2×5.00 = 14.00
+-- Ordine 2 — giulia.tamaro (idUtente=3): 1×filone integrale + 2×pane alle olive = 14.00
 (2, 3, 2, 1),   -- Filone integrale ×1
 (5, 3, 2, 2),   -- Pane alle olive ×2
 
--- Ordine 3 — marco.sartori (idUtente=4) — prodotti del Menu 3: 3×3.50 + 1×4.20 = 14.70
-(1, 4, 3, 3),   -- Pagnotta ×3
-(6, 4, 3, 1),   -- Filone ai semi ×1
+-- Ordine 3 — marco.sartori (idUtente=4): 3×pagnotta + 1×filone ai semi = 14.70
+(1, 4, 3, 3),   -- Pagnotta con lievito madre ×3
+(6, 4, 3, 1),   -- Filone ai semi misti ×1
 
--- Ordine 4 — elena.cosulich (idUtente=5) — prodotti del Menu 1: 2×4.50 + 1×3.80 = 12.80
+-- Ordine 4 — elena.cosulich (idUtente=5): 2×pane di semola + 1×focaccia = 12.80
 (3, 5, 4, 2),   -- Pane di semola ×2
 (4, 5, 4, 1),   -- Focaccia al rosmarino ×1
 
--- Ordine 5 — luca.ferrario (idUtente=2) — prodotti del Menu 2: 2×4.00 + 1×4.50 = 12.50
+-- Ordine 5 — luca.ferrario (idUtente=2): 2×filone integrale + 1×pane di semola = 12.50
 (2, 2, 5, 2),   -- Filone integrale ×2
 (3, 2, 5, 1),   -- Pane di semola ×1
 
--- Ordine 6 — paolo.pieri (idUtente=6) — prodotti del Menu 3: 1×3.50 + 2×3.80 + 1×4.20 = 15.30
-(1, 6, 6, 1),   -- Pagnotta ×1
+-- Ordine 6 — paolo.pieri (idUtente=6): 1×pagnotta + 2×focaccia + 1×filone ai semi = 15.30
+(1, 6, 6, 1),   -- Pagnotta con lievito madre ×1
 (4, 6, 6, 2),   -- Focaccia al rosmarino ×2
-(6, 6, 6, 1),   -- Filone ai semi ×1
+(6, 6, 6, 1),   -- Filone ai semi misti ×1
 
--- Ordine 7 — stefania.vidali (idUtente=7) — prodotti del Menu 3: 2×5.00 + 1×4.20 = 14.20
+-- Ordine 7 — stefania.vidali (idUtente=7): 2×pane alle olive + 1×filone ai semi = 14.20
 (5, 7, 7, 2),   -- Pane alle olive ×2
-(6, 7, 7, 1),   -- Filone ai semi ×1
+(6, 7, 7, 1),   -- Filone ai semi misti ×1
 
--- Ordine 8 — roberto.musco (idUtente=8) — prodotti del Menu 1: 2×3.50 + 1×4.00 = 11.00
-(1, 8, 8, 2),   -- Pagnotta ×2
+-- Ordine 8 — roberto.musco (idUtente=8): 2×pagnotta + 1×filone integrale = 11.00
+(1, 8, 8, 2),   -- Pagnotta con lievito madre ×2
 (2, 8, 8, 1),   -- Filone integrale ×1
 
--- Ordine 9 — ospite (idUtente=NULL): 1×3.50 + 1×4.80 = 8.30... pagnotta + filone ai semi
-(1, NULL, 9, 1),  -- Pagnotta ×1
-(6, NULL, 9, 1);  -- Filone ai semi ×1
+-- Ordine 9 — ospite (idUtente=NULL): 1×pagnotta + 1×filone ai semi = 7.70
+(1, NULL, 9, 1),  -- Pagnotta con lievito madre ×1
+(6, NULL, 9, 1);  -- Filone ai semi misti ×1
+
+-- ── Notifiche ────────────────────────────────
+-- Simula le notifiche create automaticamente da checkout/conferma.php.
+-- Letto = 1 → già lette; Letto = 0 → non lette (badge visibile in header).
+
+INSERT INTO tNotifica (idUtente, Messaggio, Letto, CreatoIl) VALUES
+-- luca.ferrario (idUtente=2): ordine #1 confermato (letto), ordine #5 confermato (non letto → badge)
+(2, 'Il tuo ordine #1 è stato confermato!',                    1, DATE_SUB(NOW(), INTERVAL 45 DAY)),
+(2, 'Il tuo ordine #5 è stato confermato!',                    0, DATE_SUB(NOW(), INTERVAL 2  DAY)),
+
+-- giulia.tamaro (idUtente=3): ordine #2 in attesa (non letto → badge)
+(3, 'Il tuo ordine #2 è in attesa di conferma dal panificio.', 0, DATE_SUB(NOW(), INTERVAL 30 DAY)),
+
+-- marco.sartori (idUtente=4): ordine #3 confermato (letto)
+(4, 'Il tuo ordine #3 è stato confermato!',                    1, DATE_SUB(NOW(), INTERVAL 20 DAY)),
+
+-- elena.cosulich (idUtente=5): ordine #4 confermato (letto)
+(5, 'Il tuo ordine #4 è stato confermato!',                    1, DATE_SUB(NOW(), INTERVAL 15 DAY)),
+
+-- paolo.pieri (idUtente=6): ordine #6 confermato (letto)
+(6, 'Il tuo ordine #6 è stato confermato!',                    1, DATE_SUB(NOW(), INTERVAL 10 DAY)),
+
+-- stefania.vidali (idUtente=7): ordine #7 in attesa (non letto → badge)
+(7, 'Il tuo ordine #7 è in attesa di conferma dal panificio.', 0, DATE_SUB(NOW(), INTERVAL 5  DAY)),
+
+-- roberto.musco (idUtente=8): ordine #8 confermato (letto)
+(8, 'Il tuo ordine #8 è stato confermato!',                    1, DATE_SUB(NOW(), INTERVAL 3  DAY));
