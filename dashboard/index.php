@@ -8,7 +8,7 @@ $db = getDB();
 
 // Ultimo ordine
 $stmt = $db->prepare("
-    SELECT DISTINCT o.idOrdine, o.ImportoTotalePrevisto, o.ImportoFinaleConfermato
+    SELECT DISTINCT o.idOrdine, o.ImportoTotalePrevisto, o.ImportoFinaleConfermato, o.Stato
     FROM tOrdine o
     JOIN tSelezione ts ON o.idOrdine = ts.idOrdine
     WHERE ts.idUtente = ?
@@ -61,8 +61,12 @@ $totaleOrdini = (int)$stmt->fetchColumn();
                     <strong>Ordine #<?= $ultimoOrdine['idOrdine'] ?></strong>
                     <br>
                     <span class="fw-bold" style="color:var(--bread-brown)"><?= formatPrezzo($ultimoOrdine['ImportoTotalePrevisto']) ?></span>
-                    <?php if ($ultimoOrdine['ImportoFinaleConfermato'] !== null): ?>
-                        <span class="ms-2 text-muted small">(confermato: <?= formatPrezzo($ultimoOrdine['ImportoFinaleConfermato']) ?>)</span>
+                    <?php if ($ultimoOrdine['Stato'] === 'confermato'): ?>
+                        <?php if ($ultimoOrdine['ImportoFinaleConfermato'] !== null): ?>
+                            <span class="ms-2 text-muted small">(confermato: <?= formatPrezzo($ultimoOrdine['ImportoFinaleConfermato']) ?>)</span>
+                        <?php else: ?>
+                            <span class="ms-2 badge bg-success">Confermato</span>
+                        <?php endif; ?>
                     <?php else: ?>
                         <span class="ms-2 badge bg-warning text-dark">In attesa di conferma</span>
                     <?php endif; ?>

@@ -5,7 +5,7 @@ requireLogin();
 
 $db = getDB();
 $stmt = $db->prepare("
-    SELECT DISTINCT o.idOrdine, o.ImportoTotalePrevisto, o.ImportoFinaleConfermato,
+    SELECT DISTINCT o.idOrdine, o.ImportoTotalePrevisto, o.ImportoFinaleConfermato, o.Stato,
            o.NomeViaConsegna, o.NumeroCivicoConsegna, o.CAPConsegna
     FROM tOrdine o
     JOIN tSelezione ts ON o.idOrdine = ts.idOrdine
@@ -49,8 +49,12 @@ $ordini = $stmt->fetchAll();
                         <td><?= sanitize($o['NomeViaConsegna']) ?> <?= sanitize($o['NumeroCivicoConsegna']) ?>, <?= sanitize($o['CAPConsegna']) ?></td>
                         <td class="fw-bold"><?= formatPrezzo($o['ImportoTotalePrevisto']) ?></td>
                         <td>
-                            <?php if ($o['ImportoFinaleConfermato'] !== null): ?>
-                                <span class="fw-bold text-success"><?= formatPrezzo($o['ImportoFinaleConfermato']) ?></span>
+                            <?php if ($o['Stato'] === 'confermato'): ?>
+                                <?php if ($o['ImportoFinaleConfermato'] !== null): ?>
+                                    <span class="fw-bold text-success"><?= formatPrezzo($o['ImportoFinaleConfermato']) ?></span>
+                                <?php else: ?>
+                                    <span class="badge bg-success">Confermato</span>
+                                <?php endif; ?>
                             <?php else: ?>
                                 <span class="badge bg-warning text-dark">In attesa</span>
                             <?php endif; ?>

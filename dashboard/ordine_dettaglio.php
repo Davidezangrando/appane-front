@@ -97,10 +97,14 @@ $dettagli = $stmt->fetchAll();
         <div class="card dash-card">
             <div class="card-body">
                 <h5 class="card-title mb-3">Stato ordine</h5>
-                <?php if ($ordine['ImportoFinaleConfermato'] !== null): ?>
+                <?php if ($ordine['Stato'] === 'confermato'): ?>
                     <div class="alert alert-success mb-0">
                         <i class="bi bi-check-circle"></i> Ordine confermato dal panificio
-                        <div class="mt-1 fw-bold"><?= formatPrezzo($ordine['ImportoFinaleConfermato']) ?></div>
+                        <?php if ($ordine['ImportoFinaleConfermato'] !== null): ?>
+                            <div class="mt-1 fw-bold"><?= formatPrezzo($ordine['ImportoFinaleConfermato']) ?></div>
+                        <?php else: ?>
+                            <div class="mt-1 text-muted small">Il totale finale sarà definito a breve.</div>
+                        <?php endif; ?>
                     </div>
                 <?php else: ?>
                     <div class="alert alert-warning mb-0">
